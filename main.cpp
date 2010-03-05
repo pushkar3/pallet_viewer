@@ -47,7 +47,7 @@ void packlist_unittest(const char* filename) {
 
 int main(int argc, char* argv[]) {
 #ifdef PACKLIST_UNITTEST
-	packlist_unittest("Beverage_001.packlist.xml");
+	packlist_unittest("Example.packlist.xml");
 #else
 
 #endif

@@ -7,29 +7,41 @@
 
 #include "view.h"
 
-GLuint create_Grid_DL() {
-	float g = 10.0f;
-	GLuint Grid_DL;
-	Grid_DL = glGenLists(1);
-	glNewList(Grid_DL, GL_COMPILE);
-		glPushMatrix();
-		glColor3f(0.3f, 0.3f, 0.3f);
-		for(float i = -g*10; i < g*10+1; i++) {
-			glBegin(GL_LINES);
-			glVertex3f(i/10, -g, 0);
-			glVertex3f(i/10, g, 0);
-			glEnd();
-		}
-		for(float i = -g*10; i < g*10+1; i++) {
-			glBegin(GL_LINES);
-			glVertex3f(-g, i/10, 0);
-			glVertex3f(g, i/10, 0);
-			glEnd();
-		}
-		glPopMatrix();
-	glEndList();
-	return Grid_DL;
-}
+#define REDBLUE  1
+#define REDGREEN 2
+#define REDCYAN  3
+#define BLUERED  4
+#define GREENRED 5
+#define CYANRED  6
+int glassestype = REDBLUE;
 
-void gl_init(int w, int h) {
+int debug = 0;
+int fullscreen = 0;
+int currentbutton = -1;
+float rotatespeed = 0.5;     /* Each object can autorotate      */
+double dtheta = 1.0;         /* Camera rotation angle increment */
+CAMERA camera;
+Point origin = {0.0,0.0,0.0};
+
+void gl_init(int argc, char* argv[], int w, int h) {
+	glutInit(&argc, argv);
+	/* DVV - removed GLUT_ACCUM */
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
+	/* Create the window and handlers */
+	glutCreateWindow("Pallet Viewer");
+	camera.screenwidth = w;
+	camera.screenheight = h;
+	glutReshapeWindow(camera.screenwidth,camera.screenheight);
+	if (fullscreen)
+	  glutFullScreen();
+	/*
+	glutDisplayFunc(handle_display);
+	glutReshapeFunc(handle_reshape);
+	glutVisibilityFunc(handle_visibility);
+	glutKeyboardFunc(handle_keyboard);
+	glutSpecialFunc(handle_specialkeyboard);
+	glutMouseFunc(handle_mouse);
+	glutMotionFunc(handle_mousemotion);
+	*/
 }
