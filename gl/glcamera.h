@@ -8,24 +8,7 @@
 #ifndef GLCAMERA_H_
 #define GLCAMERA_H_
 
-class Vec3 {
-public:
-	double x, y, z;
-	void set(double _x, double _y, double _z) {
-		x = _x; y = _y; z = _z;
-	}
-	void zero() {
-		x = y = z = 0.0f;
-	}
-	void normalize() {
-		double length = sqrt(x*x + y*y + z*z);
-		if(length != 0) {
-			x /= length;
-			y /= length;
-			z /= length;
-		}
-	}
-};
+#include "glstdlib.h"
 
 class glcamera {
 	Vec3 vp;	// View position

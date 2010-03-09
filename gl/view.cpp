@@ -23,11 +23,38 @@ int debug = 0;
 int fullscreen = 0;
 int currentbutton = -1;
 float rotatespeed = 0.0f;     /* Each object can autorotate      */
-double dtheta = 1.0;         /* Camera rotation angle increment */
+double dtheta = 5.0;         /* Camera rotation angle increment */
 CAMERA camera;
 XYZ origin = {0.0,0.0,0.0};
 int windowdump = 0;
 int movierecord = 0;
+
+void MakeGrid(void) {
+	glPushMatrix();
+	glColor3f(0.1f, 0.1f, 0.1f);
+	int k = 100;
+	int c = 10;
+	for(int i = -k; i < k; i+=c) {
+		if(i == 0) continue;
+		glBegin(GL_LINES);
+		glVertex3f(i, k, 0.0f);
+		glVertex3f(i, -k, 0.0f);
+		glEnd();
+
+		glBegin(GL_LINES);
+		glVertex3f(k, i, 0.0f);
+		glVertex3f(-k, i, 0.0f);
+		glEnd();
+	}
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_LINES); glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(10.0f, 0.0f, 0.0f); glEnd();
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES); glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(0.0f, 10.0f, 0.0f); glEnd();
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES); glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 10.0f); glEnd();
+	glPopMatrix();
+}
 
 void MakeBox(void)
 {
@@ -69,6 +96,7 @@ void CreateWorld(void) {
    glRotatef(rotateangle,0.0,1.0,0.0);
    // MakeBox();
    DrawPallet();
+   MakeGrid();
    glPopMatrix();
 
    rotateangle += rotatespeed;
@@ -113,6 +141,7 @@ void MakeLighting(void)
 
 void CameraHome(int mode)
 {
+	mode = 4;
    camera.aperture = 60;
    camera.pr = origin;
 
@@ -121,12 +150,12 @@ void CameraHome(int mode)
    camera.vd.z = 0;
 
    camera.vu.x = 0;
-   camera.vu.y = 1;
-   camera.vu.z = 0;
+   camera.vu.y = 0;
+   camera.vu.z = 1;
 
    camera.vp.x = -10;
    camera.vp.y = 200;
-   camera.vp.z = 0;
+   camera.vp.z = 50;
 
    switch (mode) {
    case 0:
@@ -377,16 +406,16 @@ void handle_specialkeyboard(int key,int x, int y)
 
 void handle_keyboard(unsigned char key,int x, int y) {
    switch (key) {
-   case 'Q':
-   case 'q':
+   case 'Z':
+   case 'z':
       exit(0);
       break;
    case 'h':                           /* Go home     */
    case 'H':
       CameraHome(0);
       break;
-   case 'd':                           /* Save one image */
-   case 'D':
+   case 't':                           /* Save one image */
+   case 'T':
       windowdump = 1;
       break;
    case 'r':                           /* Toggle image recording */
@@ -399,28 +428,28 @@ void handle_keyboard(unsigned char key,int x, int y) {
    case ']':                           /* Roll clockwise */
       RotateCamera(0,0,1);
       break;
-   case 'i':                           /* Translate camera up */
-   case 'I':
+   case 'w':                           /* Translate camera up */
+   case 'W':
       TranslateCamera(0,10, 0);
       break;
-   case 'k':                           /* Translate camera down */
-   case 'K':
+   case 's':                           /* Translate camera down */
+   case 'S':
       TranslateCamera(0,-10, 0);
       break;
-   case 'j':                           /* Translate camera left */
-   case 'J':
+   case 'a':                           /* Translate camera left */
+   case 'A':
       TranslateCamera(-10,0, 0);
       break;
-   case 'l':                           /* Translate camera right */
-   case 'L':
+   case 'd':                           /* Translate camera right */
+   case 'D':
       TranslateCamera(10,0, 0);
       break;
-   case 'w':                           /* Zoom in */
-   case 'W':
+   case 'q':                           /* Zoom in */
+   case 'Q':
       TranslateCamera(0,0, 10);
       break;
-   case 's':                           /* Zoom out */
-   case 'S':
+   case 'e':                           /* Zoom out */
+   case 'E':
 	  TranslateCamera(0,0, -10);
 	  break;
    case 'f':

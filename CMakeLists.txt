@@ -45,6 +45,7 @@ ${SRC_FILES}
 
 set ( HEADERS
 ./gl
+/usr/include
 )
 
 find_package(GLUT)
