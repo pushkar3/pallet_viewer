@@ -9,10 +9,11 @@
 #include <vector>
 #include <fstream>
 #include <stdlib.h>
+#include "gl/main.h"
+#include "gl/view.h"
 #include "xml_parser.h"
 #include "packlist.h"
 #include "response.h"
-#include "gl/view.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ typedef struct {
 int max_x, max_y, max_z;
 
 vector<PalletProperties> v_pallet;
-int c;
+unsigned int c;
 
 void packlist_unittest(const char* filename) {
 	ifstream ifs(filename);
@@ -56,60 +57,21 @@ void packlist_unittest(const char* filename) {
 	printf("PackList UnitTest Done.\n");
 }
 
-void DrawRectangularCube(int x, int y, int z, int width, int length, int height) {
-	glBegin(GL_LINES);
-	glVertex3d(x, y, z); glVertex3d(x+width, y, z);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y, z); glVertex3d(x, y+length, z);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y, z); glVertex3d(x, y, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x+width, y, z); glVertex3d(x+width, y+length, z);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x+width, y, z); glVertex3d(x+width, y, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y+length, z); glVertex3d(x+width, y+length, z);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y+length, z); glVertex3d(x, y+length, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y, z+height); glVertex3d(x, y+length, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y, z+height); glVertex3d(x+width, y, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x+width, y, z+height); glVertex3d(x+width, y+length, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x+width, y+length, z); glVertex3d(x+width, y+length, z+height);
-	glEnd();
-	glBegin(GL_LINES);
-	glVertex3d(x, y+length, z+height); glVertex3d(x+width, y+length, z+height);
-	glEnd();
-}
-
-void DrawPallet() {
-	for(int i = 0; i < c; i++) {
-		DrawRectangularCube(v_pallet[i].x, v_pallet[i].y, v_pallet[i].z, v_pallet[i].width, v_pallet[i].length, v_pallet[i].height);
+void pallet_draw_vector() {
+	for(unsigned int i = 0; i < c; i++) {
+		draw_wired_cube(v_pallet[i].x, v_pallet[i].y, v_pallet[i].z, v_pallet[i].width, v_pallet[i].length, v_pallet[i].height);
 	}
 }
 
-void Pallet_Keyboard_Control(int key) {
-	if(key > 0 && key < v_pallet.size()) {
+void pallet_vector_key_control(int key) {
+	if(key > 0 && c < v_pallet.size()) {
 		if(key == -1) c--;
 		else if(key == 1) c++;
 	}
 }
 
 
-void MakePallet() {
+void pallet_dump_vector() {
 	ifstream ifs("Example.packlist.xml");
 	if(!ifs.is_open()) {
 		printf("File not open.\n");
@@ -156,8 +118,8 @@ int main(int argc, char* argv[]) {
 #ifdef PACKLIST_UNITTEST
 	packlist_unittest("Example.packlist.xml");
 #else
-	MakePallet();
-	gl_init(argc, argv, 800, 600);
+	pallet_dump_vector();
+	gl_init(argc, argv, "Pallet Viewer", 800, 600);
 	glutMainLoop();
 	return(0);
 #endif

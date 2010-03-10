@@ -3,12 +3,11 @@
  *
  *  Created on: Mar 8, 2010
  *      Author: pushkar
+ *      Brief: Standard Library for glcamera
  */
 
 #ifndef GL_STDTYPE_H_
 #define GL_STDTYPE_H_
-
-#include <math.h>
 
 class Vec3 {
 public:
@@ -16,51 +15,34 @@ public:
 	void set(double _x, double _y, double _z) {
 		x = _x; y = _y; z = _z;
 	}
+	void set(Vec3 b) {
+		x = b.x; y = b.y; z = b.z;
+	}
+	void set_unit_x() {
+		set(1, 0, 0);
+	}
+	void set_unit_y() {
+		set(0, 1, 0);
+	}
+	void set_unit_z() {
+		set(0, 0, 1);
+	}
+	void set_null() {
+		set(0, 0, 0);
+	}
+	void scale(double s) {
+		set(x*s, y*s, z*s);
+	}
 	void zero() {
 		x = y = z = 0.0f;
 	}
-	void normalize() {
-		double length = sqrt(x*x + y*y + z*z);
-		if(length != 0) {
-			x /= length;
-			y /= length;
-			z /= length;
-		}
-	}
-};
-
-class Mat33 {
-public:
-	double e[9];
-
-	Mat33() {
-		identity();
-	}
-
-	inline double d(int row, int col) {
-		return e[row*3 + col];
-	}
-
-	void identity() {
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < 3; j++) {
-				d(i, j) = 0.0f;
-				if(i == j) d(i, j) = 1.0f;
-			}
-		}
-	}
-
-	Mat33 mult(Mat33 b) {
-		Mat33 a;
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < 3; j++) {
-				a.d(i, j) = d(i,0)*b.d(0,j)
-		        + d(i,1)*b.d(1,j)
-		        + d(i,2)*b.d(2,j);
-			}
-		}
-		return a;
-	}
+	void normalize();
+	void rot(double az, double inc);
+	void rotx(double a);
+	void roty(double a);
+	void rotz(double a);
+	void add(Vec3 b);
+	Vec3 cross(Vec3 b);
 };
 
 #endif /* GL_STDTYPE_H_ */

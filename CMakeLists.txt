@@ -29,6 +29,9 @@ endif (PACKLIST_UNITTEST)
 
 set( SRC_GUI 
 gl/view
+gl/glcamera
+gl/glstdlib
+gl/main
 )
 
 set ( SRC_FILES
