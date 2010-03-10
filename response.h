@@ -80,4 +80,6 @@ public:
 	int parse(std::string data);
 };
 
+PackList read_response(const char* filename, int debug);
+
 #endif /* RESPONSE_H_ */

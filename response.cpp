@@ -8,6 +8,7 @@
 #include "response.h"
 #include "xml_parser.h"
 #include <stdlib.h>
+#include <fstream>
 
 int Point::parse(std::string data) {
 	x = atoi(xml_parse_tag(data, "X").c_str());
@@ -72,4 +73,39 @@ int PackList::parse(std::string data) {
 		ret = xml_parse_remove_first_tag(&data, "PackPallet");
 	}
 	return strlen(data.c_str());
+}
+
+PackList read_response(const char* filename, int debug) {
+	std::ifstream ifs(filename);
+	if(!ifs.is_open()) {
+		printf("File not found.\n Exiting.\n");
+		exit(1);
+	}
+
+	int buf_len = xml_parser_get_buffer_length(filename);
+	char* packlist_buf = (char*) malloc (buf_len + 1);
+	ifs.read(packlist_buf, buf_len);
+	std::string packlist_xml = packlist_buf;
+
+	PackList list;
+	list.parse(xml_parse_tag(packlist_xml, "PackList"));
+
+	if(debug) {
+		printf("Number of PackPallets: %d\n", list.n_packpallet());
+
+		for(uint i = 0; i < list.n_packpallet(); i++) {
+			printf("%d. Number of Packages: %d\n", list.n_packpallet(), list.packpallet[i].n_package());
+			for(uint j = 0; j < list.packpallet[i].n_package(); j++) {
+				printf("Pack Sequence: %d\t", list.packpallet[i].package[j].pack_sequence);
+				printf("ID: %d \t Size: <%d, %d, %d>\n", list.packpallet[i].package[j].article.id,
+						list.packpallet[i].package[j].article.width,
+						list.packpallet[i].package[j].article.height,
+						list.packpallet[i].package[j].article.length);
+			}
+		}
+	}
+
+	printf("PackList Read.\n");
+	free(packlist_buf);
+	return list;
 }

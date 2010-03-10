@@ -75,4 +75,6 @@ public:
 	int parse(std::string data);
 };
 
+Order read_order(const char* filename, int debug);
+
 #endif

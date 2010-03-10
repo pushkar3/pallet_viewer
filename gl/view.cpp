@@ -29,7 +29,7 @@ void MakeGrid(void) {
 	glPushMatrix();
 	glColor3f(0.3f, 0.3f, 0.3f);
 	int k = 1000;
-	int c = 10;
+	int c = 100;
 	for (int i = -k; i < k; i += c) {
 		if (i == 0)
 			continue;
@@ -67,7 +67,7 @@ void CreateWorld(void) {
 	MakeGrid();
 	_draw();
 	glPopMatrix();
-	MakeLighting();
+	// MakeLighting();
 }
 
 
@@ -116,7 +116,7 @@ void gl_init(int argc, char* argv[], const char* win_name, int w, int h) {
 	if (fullscreen)
 		glutFullScreen();
 
-	glutDisplayFunc(handle_display);
+	glutDisplayFunc(handle_simple_display);
 	glutReshapeFunc(handle_reshape);
 	glutVisibilityFunc(handle_visibility);
 	glutKeyboardFunc(handle_keyboard);
@@ -124,7 +124,33 @@ void gl_init(int argc, char* argv[], const char* win_name, int w, int h) {
 	glutMouseFunc(handle_mouse);
 	glutMotionFunc(handle_mousemotion);
 
-	CreateEnvironment();
+	// CreateEnvironment();
+}
+
+void handle_simple_display(void) {
+	Vec3 focus = camera->get_focalvector();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(camera->aperture, camera->screenwidth/(double) camera->screenheight, 0.1, 10000.0);
+	glViewport(0, 0, camera->screenwidth, camera->screenheight);
+
+	glEnable(GL_DEPTH_TEST);
+
+	// Create the model
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(camera->vpos.x, camera->vpos.y, camera->vpos.z, focus.x, focus.y, focus.z,
+	camera->vup.x, camera->vup.y, camera->vup.z);
+	CreateWorld();
+
+	if (windowdump || movierecord) {
+		WindowDump(camera->screenwidth, camera->screenheight);
+		windowdump = 0;
+	}
+
+	glutSwapBuffers();
 }
 
 void handle_display(void) {
@@ -165,8 +191,8 @@ void handle_display(void) {
 			camera->vpos.z - right.z, focus.x, focus.y, focus.z, camera->vup.x,
 			camera->vup.y, camera->vup.z);
 	CreateWorld();
-	glFlush();
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	//glFlush();
+	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
 	glDrawBuffer(GL_BACK);
 	glClear(GL_DEPTH_BUFFER_BIT);

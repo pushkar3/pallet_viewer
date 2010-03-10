@@ -9,8 +9,6 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-void draw_wired_cube(int x, int y, int z, int width, int length, int height);
-void pallet_dump_vector();
 void pallet_vector_key_control(int key);
 void pallet_draw_vector();
 

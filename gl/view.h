@@ -18,6 +18,7 @@ extern int gl_window;
 void gl_init(int argc, char* argv[], const char* win_name, int w, int h);
 
 void handle_display();
+void handle_simple_display();
 void handle_keyboard(unsigned char key, int x, int y);
 void handle_specialkeyboard(int key, int x, int y);
 void handle_mouse(int, int, int, int);

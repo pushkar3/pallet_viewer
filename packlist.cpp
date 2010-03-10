@@ -8,6 +8,7 @@
 #include "packlist.h"
 #include "xml_parser.h"
 #include <stdlib.h>
+#include <fstream>
 
 int Article::parse(std::string data) {
 	id = atoi(xml_parse_tag(data, "ID").c_str());
@@ -69,4 +70,42 @@ int Order::parse(std::string data) {
 	}
 
 	return (ret && strlen(data.c_str()));
+}
+
+Order read_order(const char* filename, int debug) {
+	std::ifstream ifs(filename);
+	if(!ifs.is_open()) {
+		printf("File not found.\n Exiting.\n");
+		exit(1);
+	}
+
+	int buf_len = xml_parser_get_buffer_length(filename);
+	char* orderlist_buf = (char*) malloc (buf_len + 1);
+	ifs.read(orderlist_buf, buf_len);
+	std::string orderlist_xml = orderlist_buf;
+
+	Order order;
+	order.parse(xml_parse_tag(orderlist_xml, "Order"));
+
+	if(debug) {
+		printf("Number of Orders: %d\n", order.n_orderline());
+
+		for(uint i = 0; i < order.n_orderline(); i++) {
+			printf("%d. OrderLine\n", i);
+			printf("  Article Id:\t %d\n", order.orderline[i].article.id);
+			printf("  Description:\t %s\n", order.orderline[i].article.description.c_str());
+			printf("  Size:  \t <%d, %d, %d>\n", order.orderline[i].article.width,
+					order.orderline[i].article.length,
+					order.orderline[i].article.height);
+			printf("  Weight:\t %d\n", order.orderline[i].article.weight);
+			printf("  Barcodes:\n");
+			for(uint j = 0; j < order.orderline[i].n_barcode(); j++) {
+				printf("\t\t %s\n", order.orderline[i].barcode[j].code.c_str());
+			}
+		}
+	}
+
+	printf("Order Read.\n");
+	free(orderlist_buf);
+	return order;
 }

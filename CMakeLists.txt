@@ -19,13 +19,21 @@ endif(NOT MSVC)
 
 # add_subdirectory (gl)
 
-option (PACKLIST_UNITTEST "UnitTest to parse a .packlist.xml" ON)
+option (PACKLIST_UNITTEST "UnitTest to parse a .packlist.xml" OFF)
+option (ORDERLIST_UNITTEST "UnitTest to parse a .order.xml" ON)
 
 if (PACKLIST_UNITTEST)
     set_property( SOURCE main.cpp
        APPEND PROPERTY COMPILE_DEFINITIONS PACKLIST_UNITTEST
     )
 endif (PACKLIST_UNITTEST)
+
+if (ORDERLIST_UNITTEST)
+    set_property( SOURCE main.cpp
+       APPEND PROPERTY COMPILE_DEFINITIONS ORDERLIST_UNITTEST
+    )
+endif (ORDERLIST_UNITTEST)
+
 
 set( SRC_GUI 
 gl/view
