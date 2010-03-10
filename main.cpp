@@ -48,8 +48,10 @@ void pallet_draw_vector() {
 		col nc = color[art.id];
 		glColor3f(nc.r, nc.g, nc.b);
 		glTranslated(pos.x, pos.y, pos.z);
-		glScalef(art.width, art.length, art.height);
+		glScalef((float)art.width/1.0f, (float)art.length/1.0f, (float)art.height/1.0f);
 		glutSolidCube(1.0f);
+		glColor3f(0.0f, 0.0f, 0.0f);
+		glutWireCube(1.0f);
 		glPopMatrix();
 
 		if(theight < pos.z) theight = pos.z;
@@ -68,6 +70,10 @@ void pallet_draw_vector() {
 	density = f_volume/f_tvolume;
 	printf("\nDensity: %.12lf\r", density);
 	printf("\n\r");
+	glPushMatrix();
+	glRasterPos2f(0.0f, 0.0f);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '3');
+	glPopMatrix();
 }
 
 void pallet_vector_key_control(int key) {

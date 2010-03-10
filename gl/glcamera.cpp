@@ -35,8 +35,8 @@ void glcamera::init() {
 	foc = get_focalvector();
 	focallength = 10.0f;
 	eyesep = focallength/30.0;
-	trans = 5.0f;
-	rots = 0.02;
+	trans = 10.0f;
+	rots = 0.008;
 }
 
 glcamera::glcamera() {

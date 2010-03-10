@@ -123,7 +123,6 @@ void gl_init(int argc, char* argv[], const char* win_name, int w, int h) {
 	glutSpecialFunc(handle_specialkeyboard);
 	glutMouseFunc(handle_mouse);
 	glutMotionFunc(handle_mousemotion);
-
 	// CreateEnvironment();
 }
 
@@ -136,7 +135,12 @@ void handle_simple_display(void) {
 	gluPerspective(camera->aperture, camera->screenwidth/(double) camera->screenheight, 0.1, 10000.0);
 	glViewport(0, 0, camera->screenwidth, camera->screenheight);
 
+	glShadeModel(GL_SMOOTH);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_SMOOTH);
 
 	// Create the model
 	glMatrixMode(GL_MODELVIEW);
