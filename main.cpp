@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
 		printf("usage: %s -o Example.order.xml -p Example.packlist.xml\n", argv[0]);
 		printf("check: man pallet_viewer for more information.\n");
 		if(argc < 3) {
-			printf("Did you try the example xml's in /opt/vmac/?\n\n");
+			printf("Did you try the example xml's in /usr/share/vmac/?\n\n");
 		}
 		exit(0);
 	}
