@@ -22,6 +22,7 @@ int fullscreen = 0;
 int currentbutton = -1;
 int windowdump = 0;
 int movierecord = 0;
+int rotate = 0;
 
 glcamera* camera;
 
@@ -31,8 +32,6 @@ void MakeGrid(void) {
 	int k = 1000;
 	int c = 100;
 	for (int i = -k; i < k; i += c) {
-		if (i == 0)
-			continue;
 		glBegin(GL_LINES);
 		glVertex3f(i, k, 0.0f);
 		glVertex3f(i, -k, 0.0f);
@@ -135,18 +134,16 @@ void handle_simple_display(void) {
 	gluPerspective(camera->aperture, camera->screenwidth/(double) camera->screenheight, 0.1, 10000.0);
 	glViewport(0, 0, camera->screenwidth, camera->screenheight);
 
+	// Create the model
+
+	gluLookAt(camera->vpos.x, camera->vpos.y, camera->vpos.z, focus.x, focus.y, focus.z,
+	camera->vup.x, camera->vup.y, camera->vup.z);
 	glShadeModel(GL_SMOOTH);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LINE_SMOOTH);
-
-	// Create the model
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(camera->vpos.x, camera->vpos.y, camera->vpos.z, focus.x, focus.y, focus.z,
-	camera->vup.x, camera->vup.y, camera->vup.z);
 	CreateWorld();
 
 	if (windowdump || movierecord) {
@@ -294,6 +291,9 @@ void handle_keyboard(unsigned char key, int x, int y) {
 	case 'D':
 		camera->key_right();
 		break;
+	case 'o':
+	case 'O':
+		rotate = !rotate;
 	default:
 		_keyboard(key);		// Check for user-defined key controls
 	}
@@ -400,3 +400,30 @@ void MakeLighting(void) {
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
 }
+
+void push_2d_mode() {
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, camera->screenwidth, 0, camera->screenheight);
+	glScalef(1.0f, -1.0f, 1.0f);
+	glTranslatef(0.0f, -1.0f*camera->screenheight, 0.0f);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void pop_2d_mode() {
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void draw_string(float x, float y, void* font, char* string) {
+	push_2d_mode();
+	char *c;
+	glRasterPos2f(x, y);
+	for (c = string; *c != '\0'; c++) {
+		glutBitmapCharacter(font, *c);
+	}
+	pop_2d_mode();
+}
+

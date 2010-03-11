@@ -31,5 +31,9 @@ void CreateEnvironment(void);
 
 int WindowDump(int, int);
 
+void push_2d_mode();
+void pop_2d_mode();
+void draw_string(float x, float y, void* font, char* string);
+
 
 #endif /* VIEW_H_ */

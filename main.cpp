@@ -45,10 +45,18 @@ void pallet_draw_vector() {
 		glPushMatrix();
 		Point pos = cpallet.package[i].place_position;
 		Article art = cpallet.package[i].article;
+		int orient = cpallet.package[i].orientation;
 		col nc = color[art.id];
 		glColor3f(nc.r, nc.g, nc.b);
-		glTranslated(pos.x, pos.y, pos.z);
-		glScalef((float)art.width/1.0f, (float)art.length/1.0f, (float)art.height/1.0f);
+		// y = width
+		// x = length
+		glTranslated((float)pos.x, (float)pos.y, (float)pos.z);
+		if(orient == 1) {
+			glScalef((float)art.length/1.0f, (float)art.width/1.0f, (float)art.height/1.0f);
+		}
+		else {
+			glScalef((float)art.width/1.0f, (float)art.length/1.0f, (float)art.height/1.0f);
+		}
 		glutSolidCube(1.0f);
 		glColor3f(0.0f, 0.0f, 0.0f);
 		glutWireCube(1.0f);
@@ -62,25 +70,20 @@ void pallet_draw_vector() {
 	f_volume = (double)volume/SCALE;
 	f_theight = (double)theight;
 	f_tvolume *= f_theight;
-
-	printf("\nWeight: %d\r", weight);
-	printf("\nHeight: %.4lf\r", f_theight);
-	printf("\nVolume: %.4lf\r", f_volume);
-	printf("\nTotal Volume: %.4lf\r", f_tvolume);
 	density = f_volume/f_tvolume;
-	printf("\nDensity: %.12lf\r", density);
-	printf("\n\r");
-	glPushMatrix();
-	glRasterPos2f(0.0f, 0.0f);
-	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, '3');
-	glPopMatrix();
+
+	glColor3f(0.7f, 0.7f, 0.7f);
+	char str[100] = "";
+	sprintf(str, "Weight: %d\n", weight); 				draw_string(20.0f, 20.0f, GLUT_BITMAP_HELVETICA_10, str);
+	sprintf(str, "Height: %.4lf\n", f_theight); 		draw_string(20.0f, 35.0f, GLUT_BITMAP_HELVETICA_10, str);
+	sprintf(str, "Volume: %.4lf\n", f_volume); 			draw_string(20.0f, 50.0f, GLUT_BITMAP_HELVETICA_10, str);
+ 	sprintf(str, "Total Volume: %.4lf\n", f_tvolume); 	draw_string(20.0f, 65.0f, GLUT_BITMAP_HELVETICA_10, str);
+	sprintf(str, "Density: %.12lf\n", density); 		draw_string(20.0f, 80.0f, GLUT_BITMAP_HELVETICA_10, str);
 }
 
 void pallet_vector_key_control(int key) {
-	if(key > 0 && c < cpallet.n_package()) {
-		if(key == -1) c--;
-		else if(key == 1) c++;
-	}
+	if(key == -1 && c > 1) c--;
+	else if(key == 1 && c < cpallet.n_package()) c++;
 }
 
 using namespace std;
@@ -100,8 +103,8 @@ int main(int argc, char* argv[]) {
 		nc.g = (float)(rand() % 1000 + 1)/1000.0f;
 		nc.b = (float)(rand() % 1000 + 1)/1000.0f;
 		color.insert(pair<int, col> (order.orderline[i].article.id, nc));
-		printf("Inserted at %d: %.2f %.2f %.2f\n", i, nc.r, nc.g, nc.b);
 	}
+	printf("Press g/f to spawn boxes...\n");
 	gl_init(argc, argv, "Pallet Viewer", 800, 600);
 	glutMainLoop();
 
