@@ -89,11 +89,28 @@ void pallet_vector_key_control(int key) {
 using namespace std;
 
 int main(int argc, char* argv[]) {
+	char order_file[100] = "";
+	char packlist_file[100] = "";
+
+	if(argc < 5) {
+		printf("usage: %s -o Example.order.xml -p Example.packlist.xml\n", argv[0]);
+		printf("check: man pallet_viewer for more information.\n");
+		if(argc < 3) {
+			printf("Did you try the example xml's in /opt/vmac/?\n\n");
+		}
+		exit(0);
+	}
+
+	for(int i = 1; i < argc; i+=2) {
+		if(strcmp(argv[i], "-o") == 0) strcpy(order_file, argv[i+1]);
+		if(strcmp(argv[i], "-p") == 0) strcpy(packlist_file, argv[i+1]);
+	}
+
 	c = 0;
 	pair<map<int, col>::iterator, bool> ret;
 
-	order = read_order("Example.order.xml", 0);
-	list = read_response("Example.packlist.xml", 0);
+	order = read_order(order_file, 0);
+	list = read_response(packlist_file, 0);
 	cpallet = list.packpallet[0];
 
 	srand(time(NULL));
@@ -105,6 +122,8 @@ int main(int argc, char* argv[]) {
 		color.insert(pair<int, col> (order.orderline[i].article.id, nc));
 	}
 	printf("Press g/f to spawn boxes...\n");
+	printf("Press w/a/s/d and mouse to move...\n");
+	printf("Press z to exit...\n");
 	gl_init(argc, argv, "Pallet Viewer", 800, 600);
 	glutMainLoop();
 

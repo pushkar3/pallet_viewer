@@ -75,7 +75,7 @@ int Order::parse(std::string data) {
 Order read_order(const char* filename, int debug) {
 	std::ifstream ifs(filename);
 	if(!ifs.is_open()) {
-		printf("File not found.\n Exiting.\n");
+		printf("%s File not found.\n Exiting.\n", filename);
 		exit(1);
 	}
 

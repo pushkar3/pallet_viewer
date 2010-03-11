@@ -78,7 +78,7 @@ int PackList::parse(std::string data) {
 PackList read_response(const char* filename, int debug) {
 	std::ifstream ifs(filename);
 	if(!ifs.is_open()) {
-		printf("File not found.\n Exiting.\n");
+		printf("%s File not found.\n Exiting.\n", filename);
 		exit(1);
 	}
 

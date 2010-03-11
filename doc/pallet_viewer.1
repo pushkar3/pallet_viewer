@@ -1,0 +1,44 @@
+.TH pallet_viewer 1 "" "" "USER COMMANDS"
+
+.SH NAME
+pallet_viewer (Rev. 0.0.10) - Benchmarking pallets for the ICRA VMAC 2010 robot competition
+
+.SH SYNOPSIS
+.B pallet_viewer [\fIOPTIONS\fR] [\fIXML\fR]
+
+.SH DESCRIPTION
+See the VMAC competition home page for more information. The competition brings together robotics researchers interested in manufacturing and automation. The software is under development.
+.IP
+<http://www.vma-competition.com/>
+.PP
+The following benchmarks are evaluated in the current version of pallet_viewer:
+.TP
+\fITotal_Weight\fR
+Weight of the entire pallet
+.TP
+\fITotal_Volume\fR
+Volume of the entire pallet
+.TP
+\fIMaximum_Height\fR
+Maximum height of the pallet
+.TP
+\fIDensity\fR
+The density of the pallet is calculated by dividing the \fITotal_Volume\fR occupied by the pallet by the volume occupied by the pallet area and \fIMaximum_Height\fR of the pallet
+
+.SH OPTIONS
+.TP
+\fB\-o\fR=\fIORDER_XML\fR
+Specifies the order XML file. The XML design for a pallet order is designed by KUKA.
+
+.TP
+\fB\-p\fR=\fIPACKLIST_XML\fR
+Specifies the packlist/response XML file. The XML design for a pallet order is designed by KUKA. The software parses this XML file and displays pallets formed.
+
+.SH DEVELOPMENT CODE
+The development code is maintained on github. Download source code or fork from: <http://github.com/pushkar3/pallet_viewer>
+
+.SH BUGS
+Bug tracker: <http://github.com/pushkar3/pallet_viewer/issues>
+
+.SH AUTHOR
+NIST and GT (pushkar3) \- <github.com/pushkar3>
