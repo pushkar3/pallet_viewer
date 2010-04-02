@@ -20,7 +20,7 @@
 #define SCALE 1000.0f
 // Global Variables
 PackList list;
-Order order;
+OrderXML oxml;
 uint c;
 uint weight;
 uint volume, tvolume;
@@ -31,7 +31,8 @@ struct col {
 	float r, g, b;
 };
 std::map <int, col> color;
-PackPallet cpallet; 	// current packpallet
+PackPallet cpallet; 	// current packpallet from Response XML
+Pallet pallet;			// current pallet from Order XML
 
 void pallet_draw_vector() {
 	volume = 0;
@@ -50,7 +51,7 @@ void pallet_draw_vector() {
 		glColor3f(nc.r, nc.g, nc.b);
 		// y = width
 		// x = length
-		glTranslated((float)pos.x, (float)pos.y, (float)pos.z);
+		glTranslated((float)pos.x, (float)pos.y, (float)(pos.z - art.height/2.0f));
 		if(orient == 1) {
 			glScalef((float)art.length/1.0f, (float)art.width/1.0f, (float)art.height/1.0f);
 		}
@@ -109,17 +110,18 @@ int main(int argc, char* argv[]) {
 	c = 0;
 	pair<map<int, col>::iterator, bool> ret;
 
-	order = read_order(order_file, 0);
-	list = read_response(packlist_file, 0);
+	oxml.parse("Example.order.xml", 0, 0);
+	list = read_response("Example.packlist.xml", 0);
 	cpallet = list.packpallet[0];
+	pallet = oxml.pallet[0];
 
 	srand(time(NULL));
-	for (uint i = 0; i < order.n_orderline(); i++) {
+	for (uint i = 0; i < oxml.order.n_orderline(); i++) {
 		col nc;
 		nc.r = (float)(rand() % 1000 + 1)/1000.0f;
 		nc.g = (float)(rand() % 1000 + 1)/1000.0f;
 		nc.b = (float)(rand() % 1000 + 1)/1000.0f;
-		color.insert(pair<int, col> (order.orderline[i].article.id, nc));
+		color.insert(pair<int, col> (oxml.order.orderline[i].article.id, nc));
 	}
 	printf("Press g/f to spawn boxes...\n");
 	printf("Press w/a/s/d and mouse to move...\n");

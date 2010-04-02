@@ -75,6 +75,30 @@ public:
 	int parse(std::string data);
 };
 
-Order read_order(const char* filename, int debug);
+class Pallet {
+public:
+	int palletnumber;
+	std::string description;
+	int length;
+	int width;
+	int maxloadheight;
+	int maxloadweight;
+
+	Pallet() {}
+	~Pallet() {}
+	int parse(std::string data);
+};
+
+class OrderXML {
+public:
+	std::vector<Pallet> pallet;
+	unsigned int n_pallet() { return pallet.size(); }
+	Order order;
+
+	OrderXML() {}
+	~OrderXML() {}
+	int parse(const char* filename, int debug_p = 0, int debug_o = 0);
+};
+
 
 #endif

@@ -72,7 +72,20 @@ int Order::parse(std::string data) {
 	return (ret && strlen(data.c_str()));
 }
 
-Order read_order(const char* filename, int debug) {
+int Pallet::parse(std::string data) {
+	int ret = 1;
+
+	palletnumber = atoi(xml_parse_tag(data, "PalletNumber").c_str());
+	description = xml_parse_tag(data, "Description");
+	length = atoi(xml_parse_tag(data, "Length").c_str());
+	width = atoi(xml_parse_tag(data, "Width").c_str());
+	maxloadheight = atoi(xml_parse_tag(data, "MaxLoadHeight").c_str());
+	maxloadweight = atoi(xml_parse_tag(data, "MaxLoadWeight").c_str());
+
+	return (ret && strlen(data.c_str()));
+}
+
+int OrderXML::parse(const char* filename, int debug_p, int debug_o) {
 	std::ifstream ifs(filename);
 	if(!ifs.is_open()) {
 		printf("%s File not found.\n Exiting.\n", filename);
@@ -83,11 +96,26 @@ Order read_order(const char* filename, int debug) {
 	char* orderlist_buf = (char*) malloc (buf_len + 1);
 	ifs.read(orderlist_buf, buf_len);
 	std::string orderlist_xml = orderlist_buf;
+	std::string data = orderlist_xml;
 
-	Order order;
-	order.parse(xml_parse_tag(orderlist_xml, "Order"));
+	int ret = 1;
+	while(ret) {
+		std::string s_pallet = xml_parse_tag(data, "Pallet");
+		if(strlen(s_pallet.c_str()) > 0) {
+			Pallet p;
+			p.parse(s_pallet);
+			pallet.push_back(p);
+			if(debug_p) {
+				printf("Pallet %d\n", p.palletnumber);
+				printf("Length: %d \t Width: %d\n", p.length, p.width);
+			}
+		}
+		ret = xml_parse_remove_first_tag(&data, "Pallet");
+	}
 
-	if(debug) {
+	ret |= order.parse(xml_parse_tag(orderlist_xml, "Order"));
+
+	if(debug_o) {
 		printf("Number of Orders: %d\n", order.n_orderline());
 
 		for(uint i = 0; i < order.n_orderline(); i++) {
@@ -107,5 +135,5 @@ Order read_order(const char* filename, int debug) {
 
 	printf("Order Read.\n");
 	free(orderlist_buf);
-	return order;
+	return ret;
 }
