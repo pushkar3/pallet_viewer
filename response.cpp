@@ -30,6 +30,7 @@ int Package::parse(std::string data) {
 	approach_point_2.parse(xml_parse_tag(data, "ApproachPoint2"));
 	approach_point_3.parse(xml_parse_tag(data, "ApproachPoint3"));
 	stack_height_before = atoi(xml_parse_tag(data, "StackHeightBefore").c_str());
+	find_boundaries();
 	return strlen(data.c_str());
 }
 

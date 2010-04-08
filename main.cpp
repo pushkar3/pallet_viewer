@@ -41,6 +41,7 @@ void pallet_draw_vector() {
 	tvolume = 305*406;
 	f_tvolume = (double)tvolume/SCALE;
 	double density;
+	char str[100] = "";
 
 	for(unsigned int i = 0; i < c; i++) {
 		glPushMatrix();
@@ -66,6 +67,11 @@ void pallet_draw_vector() {
 		if(theight < pos.z) theight = pos.z;
 		weight += art.weight;
 		volume += (art.height*art.width*art.length);
+		glColor3f(0.7f, 0.7f, 0.7f);
+		sprintf(str, "Force on Package %d: %.2lf\n", c-1, cpallet.package[c-1].normal_force);
+		draw_string(20.0f, 100.0f, GLUT_BITMAP_HELVETICA_10, str);
+		sprintf(str, "Package %d is connected to %d packages\n", c-1, cpallet.package[c-1].connect.size());
+		draw_string(20.0f, 120.0f, GLUT_BITMAP_HELVETICA_10, str);
 	}
 
 	f_volume = (double)volume/SCALE;
@@ -74,7 +80,6 @@ void pallet_draw_vector() {
 	density = f_volume/f_tvolume;
 
 	glColor3f(0.7f, 0.7f, 0.7f);
-	char str[100] = "";
 	sprintf(str, "Weight: %d\n", weight); 				draw_string(20.0f, 20.0f, GLUT_BITMAP_HELVETICA_10, str);
 	sprintf(str, "Height: %.4lf\n", f_theight); 		draw_string(20.0f, 35.0f, GLUT_BITMAP_HELVETICA_10, str);
 	sprintf(str, "Volume: %.4lf\n", f_volume); 			draw_string(20.0f, 50.0f, GLUT_BITMAP_HELVETICA_10, str);
@@ -114,6 +119,7 @@ int main(int argc, char* argv[]) {
 	list = read_response("Example.packlist.xml", 0);
 	cpallet = list.packpallet[0];
 	pallet = oxml.pallet[0];
+	cpallet.find_normals();
 
 	srand(time(NULL));
 	for (uint i = 0; i < oxml.order.n_orderline(); i++) {
