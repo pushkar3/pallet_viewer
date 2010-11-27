@@ -43,14 +43,13 @@ gl/main
 )
 
 set ( SRC_FILES
+order
 packlist
-response
 xml_parser 
 main
 )
 
 set ( SRC 
-${SRC_GUI}
 ${SRC_FILES}
 )
 

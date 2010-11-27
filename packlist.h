@@ -1,104 +1,94 @@
 /*
- * Class structure to parse input orders for a mixed pallet.
- * KUKA input file definition for orders is used here.
+ * Class structure to parse output pallet configuration for a mixed pallet.
+ * KUKA output file definition for orders is used here.
  *
  * Author: Pushkar Kolhe
 */
 
-#ifndef PACKLIST_H_
-#define PACKLIST_H_
+#ifndef RESPONSE_H_
+#define RESPONSE_H_
 
+#include "order.h"
 #include <vector>
-#include <string.h>
-#include "xml_parser.h"
+#include <math.h>
 
-class Article {
+class Point {
 public:
-	unsigned int id;
-	std::string description;
-	unsigned int type;
+	int x;
+	int y;
+	unsigned int z;
+
+	Point() {}
+	~Point() {}
+	int parse(std::string data);
+};
+
+class Package {
+public:
+	unsigned int pack_sequence;
+	unsigned int incoming_sequence;
+	unsigned int orderlineno;
+	unsigned int parent_layer;
+	Article article;
+	Barcode barcode;
+	Point place_position;
+	unsigned int orientation;
+	Point approach_point_1;
+	Point approach_point_2;
+	Point approach_point_3;
+	unsigned int stack_height_before;
+
+	Package() {};
+	~Package() {};
+	int parse(std::string data);
+
+};
+
+class Dimensions {
+public:
 	unsigned int length;
 	unsigned int width;
-	unsigned int height;
-	unsigned int weight;
-	unsigned int family;
+	unsigned int max_load_weight;
+	unsigned int max_load_height;
 
-	Article() {}
-	~Article() {}
+	Dimensions() {}
+	~Dimensions() {}
 	int parse(std::string data);
 };
 
-class Barcode {
+class PackPallet {
 public:
-	std::string code;
-
-	Barcode() {}
-	~Barcode() {}
-	int parse(std::string data);
-};
-
-class OrderLine {
-public:
-	unsigned int orderlineno;
-	Article article;
-	std::vector<Barcode> barcode;
-
-	OrderLine() {}
-	~OrderLine() {}
-	unsigned n_barcode() { return barcode.size(); }
-	int parse(std::string data);
-};
-
-class Restrictions {
-public:
-	bool familygrouping;
-	bool ranking;
-
-	Restrictions() {
-		familygrouping = false;
-		ranking = false;
-	}
-	~Restrictions() {}
-	int parse(std::string data);
-};
-
-class Order {
-public:
-	unsigned int id;
+	unsigned int pallet_number;
+	unsigned int brutto_weight;
+	unsigned int number_of_packages;
 	std::string description;
-	Restrictions restriction;
-	std::vector <OrderLine> orderline;
+	Dimensions dimension;
+	std::vector<Package> package;
 
-	Order() {}
-	~Order() {}
-	unsigned int n_orderline() { return orderline.size(); }
+	PackPallet() {};
+	~PackPallet() {};
+	unsigned int n_package() { return package.size(); }
 	int parse(std::string data);
 };
 
-class Pallet {
+class PackList {
 public:
-	int palletnumber;
-	std::string description;
-	int length;
-	int width;
-	int maxloadheight;
-	int maxloadweight;
+	unsigned int order_id;
+	std::vector<PackPallet> packpallet;
 
-	Pallet() {}
-	~Pallet() {}
+	PackList() {};
+	~PackList() {};
+	unsigned int n_packpallet() { return packpallet.size(); }
 	int parse(std::string data);
 };
 
-class OrderXML {
+class PackListXML {
 public:
-	std::vector<Pallet> pallet;
-	unsigned int n_pallet() { return pallet.size(); }
-	Order order;
+	PackList list;
 
-	OrderXML() {}
-	~OrderXML() {}
-	int parse(const char* filename, int debug_p = 0, int debug_o = 0);
+	PackListXML() {}
+	~PackListXML() {}
+	int parse(const char* filename, int debug);
 };
 
-
-#endif
+#endif /* RESPONSE_H_ */

@@ -1,5 +1,5 @@
 /*
- * packlist.cpp
+ * response.cpp
  *
  *  Created on: Mar 4, 2010
  *      Author: pushkar
@@ -10,82 +10,72 @@
 #include <stdlib.h>
 #include <fstream>
 
-int Article::parse(std::string data) {
-	id = atoi(xml_parse_tag(data, "ID").c_str());
-	type = atoi(xml_parse_tag(data, "Type").c_str());
-	length = atoi(xml_parse_tag(data, "Length").c_str());
-	width = atoi(xml_parse_tag(data, "Width").c_str());
-	height = atoi(xml_parse_tag(data, "Height").c_str());
-	family = atoi(xml_parse_tag(data, "Family").c_str());
-	weight = atoi(xml_parse_tag(data, "Weight").c_str());
-	description = xml_parse_tag(data, "Description");
+int Point::parse(std::string data) {
+	x = atoi(xml_parse_tag(data, "X").c_str());
+	y = atoi(xml_parse_tag(data, "Y").c_str());
+	z = atoi(xml_parse_tag(data, "Z").c_str());
 	return strlen(data.c_str());
 }
 
-int Barcode::parse(std::string data) {
-	code = data;
-	return strlen(data.c_str());
-}
-
-int OrderLine::parse(std::string data) {
+int Package::parse(std::string data) {
+	pack_sequence = atoi(xml_parse_tag(data, "PackSequence").c_str());
+	incoming_sequence = atoi(xml_parse_tag(data, "IncomingSequence").c_str());
 	orderlineno = atoi(xml_parse_tag(data, "OrderLineNo").c_str());
-	std::string s_article = xml_parse_tag(data, "Article");
-	article.parse(s_article);
-	int ret = 1;
-	while(ret) {
-		std::string s_barcode = xml_parse_tag(data, "Barcode");
-		if(strlen(s_barcode.c_str()) > 0) {
-			Barcode b;
-			b.parse(s_barcode);
-			barcode.push_back(b);
-		}
-		ret = xml_parse_remove_first_tag(&data, "Barcode");
-	}
+	parent_layer = atoi(xml_parse_tag(data, "ParentLayer").c_str());
+	article.parse(xml_parse_tag(data, "Article"));
+	barcode.parse(xml_parse_tag(data, "Barcode"));
+	place_position.parse(xml_parse_tag(data, "PlacePosition"));
+	orientation = atoi(xml_parse_tag(data, "Orientation").c_str());
+	approach_point_1.parse(xml_parse_tag(data, "ApproachPoint1"));
+	approach_point_2.parse(xml_parse_tag(data, "ApproachPoint2"));
+	approach_point_3.parse(xml_parse_tag(data, "ApproachPoint3"));
+	stack_height_before = atoi(xml_parse_tag(data, "StackHeightBefore").c_str());
 	return strlen(data.c_str());
 }
 
-int Restrictions::parse(std::string data) {
-	if(strcmp(xml_parse_tag(data, "FamilyGrouping").c_str(), "True") == 0)
-		familygrouping = true;
-	if(strcmp(xml_parse_tag(data, "Ranking").c_str(), "True") == 0)
-		ranking = true;
-	return strlen(data.c_str());
-}
-
-int Order::parse(std::string data) {
-	int ret = 1;
-
-	id = atoi(xml_parse_tag(data, "ID").c_str());
-	description = xml_parse_tag(data, "Description");
-	restriction.parse(xml_parse_tag(data, "Restrictions"));
-
-	while(ret) {
-		std::string s_order = xml_parse_tag(data, "OrderLine");
-		if(strlen(s_order.c_str()) > 0) {
-			OrderLine o;
-			o.parse(s_order);
-			orderline.push_back(o);
-		}
-		ret = xml_parse_remove_first_tag(&data, "OrderLine");
-	}
-
-	return (ret && strlen(data.c_str()));
-}
-
-int Pallet::parse(std::string data) {
-	int ret = 1;
-
-	palletnumber = atoi(xml_parse_tag(data, "PalletNumber").c_str());
-	description = xml_parse_tag(data, "Description");
+int Dimensions::parse(std::string data) {
 	length = atoi(xml_parse_tag(data, "Length").c_str());
 	width = atoi(xml_parse_tag(data, "Width").c_str());
-	maxloadheight = atoi(xml_parse_tag(data, "MaxLoadHeight").c_str());
-	maxloadweight = atoi(xml_parse_tag(data, "MaxLoadWeight").c_str());
-
-	return (ret && strlen(data.c_str()));
+	max_load_height = atoi(xml_parse_tag(data, "MaxLoadHeight").c_str());
+	max_load_weight = atoi(xml_parse_tag(data, "MaxLoadWeight").c_str());
+	return strlen(data.c_str());
 }
 
-int OrderXML::parse(const char* filename, int debug_p, int debug_o) {
+int PackPallet::parse(std::string data) {
+	pallet_number = atoi(xml_parse_tag(data, "PalletNumber").c_str());
+	brutto_weight = atoi(xml_parse_tag(data, "BruttoWeight").c_str());
+	number_of_packages = atoi(xml_parse_tag(data, "NumberOfPackages").c_str());
+	description = xml_parse_tag(data, "Description");
+	dimension.parse(xml_parse_tag(data, "Dimensions"));
+	int ret = 1;
+	while(ret) {
+		std::string s_package = xml_parse_tag(data, "Package");
+		if(strlen(s_package.c_str()) > 0) {
+			Package p;
+			p.parse(s_package);
+			package.push_back(p);
+		}
+		ret = xml_parse_remove_first_tag(&data, "Package");
+	}
+	return strlen(data.c_str());
+}
+
+int PackList::parse(std::string data) {
+	order_id = atoi(xml_parse_tag(data, "OrderID").c_str());
+	int ret = 1;
+	while(ret) {
+		std::string s_packlist = xml_parse_tag(data, "PackPallet");
+		if(strlen(s_packlist.c_str()) > 0) {
+			PackPallet p;
+			p.parse(s_packlist);
+			packpallet.push_back(p);
+		}
+		ret = xml_parse_remove_first_tag(&data, "PackPallet");
+	}
+	return strlen(data.c_str());
+}
+
+int PackListXML::parse(const char* filename, int debug) {
 	std::ifstream ifs(filename);
 	if(!ifs.is_open()) {
 		printf("%s File not found.\n Exiting.\n", filename);
@@ -93,47 +83,28 @@ int OrderXML::parse(const char* filename, int debug_p, int debug_o) {
 	}
 
 	int buf_len = xml_parser_get_buffer_length(filename);
-	char* orderlist_buf = (char*) malloc (buf_len + 1);
-	ifs.read(orderlist_buf, buf_len);
-	std::string orderlist_xml = orderlist_buf;
-	std::string data = orderlist_xml;
+	char* packlist_buf = (char*) malloc (buf_len + 1);
+	ifs.read(packlist_buf, buf_len);
+	std::string packlist_xml = packlist_buf;
 
-	int ret = 1;
-	while(ret) {
-		std::string s_pallet = xml_parse_tag(data, "Pallet");
-		if(strlen(s_pallet.c_str()) > 0) {
-			Pallet p;
-			p.parse(s_pallet);
-			pallet.push_back(p);
-			if(debug_p) {
-				printf("Pallet %d\n", p.palletnumber);
-				printf("Length: %d \t Width: %d\n", p.length, p.width);
-			}
-		}
-		ret = xml_parse_remove_first_tag(&data, "Pallet");
-	}
+	list.parse(xml_parse_tag(packlist_xml, "PackList"));
 
-	ret |= order.parse(xml_parse_tag(orderlist_xml, "Order"));
+	if(debug) {
+		printf("Number of PackPallets: %d\n", list.n_packpallet());
 
-	if(debug_o) {
-		printf("Number of Orders: %d\n", order.n_orderline());
-
-		for(uint i = 0; i < order.n_orderline(); i++) {
-			printf("%d. OrderLine\n", i);
-			printf("  Article Id:\t %d\n", order.orderline[i].article.id);
-			printf("  Description:\t %s\n", order.orderline[i].article.description.c_str());
-			printf("  Size:  \t <%d, %d, %d>\n", order.orderline[i].article.width,
-					order.orderline[i].article.length,
-					order.orderline[i].article.height);
-			printf("  Weight:\t %d\n", order.orderline[i].article.weight);
-			printf("  Barcodes:\n");
-			for(uint j = 0; j < order.orderline[i].n_barcode(); j++) {
-				printf("\t\t %s\n", order.orderline[i].barcode[j].code.c_str());
+		for(uint i = 0; i < list.n_packpallet(); i++) {
+			printf("%d. Number of Packages: %d\n", list.n_packpallet(), list.packpallet[i].n_package());
+			for(uint j = 0; j < list.packpallet[i].n_package(); j++) {
+				printf("Pack Sequence: %d\t", list.packpallet[i].package[j].pack_sequence);
+				printf("ID: %d \t Size: <%d, %d, %d>\n", list.packpallet[i].package[j].article.id,
+						list.packpallet[i].package[j].article.width,
+						list.packpallet[i].package[j].article.height,
+						list.packpallet[i].package[j].article.length);
 			}
 		}
 	}
 
-	printf("Order Read.\n");
-	free(orderlist_buf);
-	return ret;
+	printf("PackList Read.\n");
+	free(packlist_buf);
+	return 1;
 }
