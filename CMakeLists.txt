@@ -9,53 +9,25 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "11")
 SET(CPACK_PACKAGE_NAME "pallet_viewer")
-SET(CPACK_SYSTEM_NAME "amd64")
+SET(CPACK_SYSTEM_NAME "i386")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "glutg3 (>= 3.7), glutg3-dev (>= 3.7)")
 
 set (CMAKE_VERBOSE_MAKEFILE OFF)
-if(NOT MSVC)
-  set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates")
-endif(NOT MSVC)
-
-# add_subdirectory (gl)
-
-option (PACKLIST_UNITTEST "UnitTest to parse a .packlist.xml" OFF)
-option (ORDERLIST_UNITTEST "UnitTest to parse a .order.xml" ON)
-
-if (PACKLIST_UNITTEST)
-    set_property( SOURCE main.cpp
-       APPEND PROPERTY COMPILE_DEFINITIONS PACKLIST_UNITTEST
-    )
-endif (PACKLIST_UNITTEST)
-
-if (ORDERLIST_UNITTEST)
-    set_property( SOURCE main.cpp
-       APPEND PROPERTY COMPILE_DEFINITIONS ORDERLIST_UNITTEST
-    )
-endif (ORDERLIST_UNITTEST)
+set (CMAKE_CXX_FLAGS "-g -O0 -Wall -Wextra -Wpointer-arith -fno-default-inline -fno-implicit-inline-templates -DMOASTSTATIC")
 
 
-set( SRC_GUI 
-gl/view
-gl/glcamera
-gl/glstdlib
-gl/main
-)
-
-set ( SRC_FILES
+set ( SRC
 packlist
 response
-xml_parser 
+mouse
+xml_parser
+view
+asBuilt
+palletViewer
 main
 )
 
-set ( SRC 
-${SRC_GUI}
-${SRC_FILES}
-)
-
 set ( HEADERS
-./gl
 /usr/include
 )
 
@@ -78,10 +50,8 @@ SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CP
 SET(CPACK_PACKAGE_CONTACT "pushkar@cc.gatech.edu")
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Pushkar Kolhe (${CPACK_PACKAGE_CONTACT})")
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Pallet Viewer and Benchmarking for the ICRA VMAC 2010 competition.")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/ReadMe.txt")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Pallet Viewer and Benchmarking for the ICRA VMAC 2011 competition.")
 SET(CPACK_PACKAGE_VENDOR "VMAC 2010, NIST and GT")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
 
 SET(CPACK_GENERATOR "DEB")
 
