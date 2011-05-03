@@ -51,26 +51,35 @@ int main(int argc, char* argv[]) {
 
 	// Set params
 	// Heights of approach points 1, 2 and 3 (lowest)
-	int h1 = 90;
-	int h2 = 50;
-	int h3 = 3;
-	int far = 60;
 
+	int h2 = 0; // Set this to max height of the highest block
 	for (uint i = 0; i < list.n_packpallet(); i++) {
 		PackPallet p = list.packpallet[i];
 		for (uint j = 0; j < p.n_package(); j++) {
-				p.package[j].approach_point_3.set(0, 0, h3); // constant
+			if (h2 < (int)p.package[j].article.height)
+				h2 = p.package[j].article.height;
+		}
+	}
+	int h1 = h2+40;
+	int h3 = 3;
+	int far = 60;
+
+	// Planning
+	for (uint i = 0; i < list.n_packpallet(); i++) {
+		PackPallet *p = &(list.packpallet[i]);
+		for (uint j = 0; j < p->n_package(); j++) {
+				p->package[j].approach_point_3.set(0, 0, h3); // constant
 
 				int x = 0, y = 0;
-				Point pos = p.package[j].place_position;
-				int height = p.package[j].article.height;
+				Point pos = p->package[j].place_position;
+				int height = p->package[j].article.height;
 				int com_x = 0;
 				int com_y = 0;
 				int com_count = 0;
 				for (uint n = 0; n < j; n++) {
-					if(abs(p.package[n].place_position.z - pos.z) < height) {
-						com_x += p.package[n].place_position.x;
-						com_y += p.package[n].place_position.y;
+					if(abs(p->package[n].place_position.z - pos.z) < height) {
+						com_x += (pos.x - p->package[n].place_position.x);
+						com_y += (pos.y - p->package[n].place_position.y);
 						com_count++;
 					}
 				}
@@ -82,8 +91,8 @@ int main(int argc, char* argv[]) {
 				x = cos(obstacles)*far;
 				y = sin(obstacles)*far;
 
-				p.package[j].approach_point_2.set(x, y, h2);
-				p.package[j].approach_point_1.set(x, y, h1);
+				p->package[j].approach_point_2.set(x, y, h2);
+				p->package[j].approach_point_1.set(x, y, h1);
 		}
 	}
 
