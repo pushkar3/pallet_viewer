@@ -147,7 +147,8 @@ int main(int argc, char* argv[]) {
 		nc.r = (float)(rand() % 1000 + 1)/1000.0f;
 		nc.g = (float)(rand() % 1000 + 1)/1000.0f;
 		nc.b = (float)(rand() % 1000 + 1)/1000.0f;
-		color.insert(pair<int, col> (oxml.order.orderline[i].article.id, nc));
+		color.insert(pair<int, col> (i/*oxml.order.orderline[i].article.id*/, nc));
+		//TODO: Find ids
 	}
 	printf("Press g/f to spawn boxes...\n");
 	printf("Press w/a/s/d and mouse to move...\n");
