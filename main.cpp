@@ -22,10 +22,11 @@
 PackList list;
 OrderXML oxml;
 uint c;
+uint ct;
 uint weight;
 uint volume, tvolume;
 double f_volume, f_tvolume, f_theight;
-uint theight;
+int theight;
 
 struct col {
 	float r, g, b;
@@ -45,20 +46,37 @@ void pallet_draw_vector() {
 
 	for(unsigned int i = 0; i < c; i++) {
 		glPushMatrix();
-		Point pos = cpallet.package[i].place_position;
 		Article art = cpallet.package[i].article;
 		int orient = cpallet.package[i].orientation;
 		col nc = color[art.id];
+		Point pos = cpallet.package[i].place_position;
+
+		Point pos_a1 = cpallet.package[i].approach_point_1.add(pos);
+		Point pos_a2 = cpallet.package[i].approach_point_2.add(pos);
+		Point pos_a3 = cpallet.package[i].approach_point_3.add(pos);
+
+		if(i == c-1) {
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glBegin(GL_LINES);
+			glVertex3f(pos_a1.x, pos_a1.y, pos_a1.z);
+			glVertex3f(pos_a2.x, pos_a2.y, pos_a2.z);
+			glEnd();
+			glBegin(GL_LINES);
+			glVertex3f(pos_a2.x, pos_a2.y, pos_a2.z);
+			glVertex3f(pos_a3.x, pos_a3.y, pos_a3.z);
+			glEnd();
+			glBegin(GL_LINES);
+			glVertex3f(pos_a3.x, pos_a3.y, pos_a3.z);
+			glVertex3f(pos.x, pos.y, pos.z);
+			glEnd();
+		}
+
+		pos.z = pos.z - art.height/2.0f;
 		glColor3f(nc.r, nc.g, nc.b);
-		// y = width
-		// x = length
-		glTranslated((float)pos.x, (float)pos.y, (float)(pos.z - art.height/2.0f));
-		if(orient == 1) {
-			glScalef((float)art.length/1.0f, (float)art.width/1.0f, (float)art.height/1.0f);
-		}
-		else {
-			glScalef((float)art.width/1.0f, (float)art.length/1.0f, (float)art.height/1.0f);
-		}
+		glTranslatef(pos.x, pos.y, pos.z);
+
+		if(orient == 1) { glScalef((float)art.length/1.0f, (float)art.width/1.0f, (float)art.height/1.0f); }
+		else { glScalef((float)art.width/1.0f, (float)art.length/1.0f, (float)art.height/1.0f); }
 		glutSolidCube(1.0f);
 		glColor3f(0.0f, 0.0f, 0.0f);
 		glutWireCube(1.0f);
@@ -67,11 +85,12 @@ void pallet_draw_vector() {
 		if(theight < pos.z) theight = pos.z;
 		weight += art.weight;
 		volume += (art.height*art.width*art.length);
+
 		glColor3f(0.7f, 0.7f, 0.7f);
-		sprintf(str, "Force on Package %d: %.2lf\n", c-1, cpallet.package[c-1].normal_force);
-		draw_string(20.0f, 100.0f, GLUT_BITMAP_HELVETICA_10, str);
-		sprintf(str, "Package %d is connected to %d packages\n", c-1, cpallet.package[c-1].connect.size());
-		draw_string(20.0f, 120.0f, GLUT_BITMAP_HELVETICA_10, str);
+		//sprintf(str, "Force on Package %d: %.2lf\n", c-1, cpallet.package[c-1].normal_force);
+		//draw_string(20.0f, 100.0f, GLUT_BITMAP_HELVETICA_10, str);
+		//sprintf(str, "Package %d is connected to %d packages\n", c-1, cpallet.package[c-1].connect.size());
+		//draw_string(20.0f, 120.0f, GLUT_BITMAP_HELVETICA_10, str);
 	}
 
 	f_volume = (double)volume/SCALE;
@@ -113,6 +132,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	c = 0;
+	ct = 0;
 	pair<map<int, col>::iterator, bool> ret;
 
 	oxml.parse("Example.order.xml", 0, 0);

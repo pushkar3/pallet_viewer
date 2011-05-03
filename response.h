@@ -15,11 +15,28 @@ class Point {
 public:
 	int x;
 	int y;
-	unsigned int z;
+	int z;
 
 	Point() {}
 	~Point() {}
 	int parse(std::string data);
+
+	Point add(Point d) {
+		Point a;
+		a.x = x+d.x; a.y = y+d.y; a.z = z+d.z;
+		return a;
+	}
+
+
+	void subtract(Point d) {
+		x -= d.x; y -= d.y; z -= d.z;
+	}
+
+	Point mult(float n) {
+		Point a;
+		a.x = x*n; a.y = y*n; a.z = z*n;
+		return a;
+	}
 };
 
 class Package {
