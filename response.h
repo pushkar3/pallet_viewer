@@ -20,6 +20,7 @@ public:
 	Point() {}
 	~Point() {}
 	int parse(std::string data);
+	std::string xml(const char* name);
 
 	Point add(Point d) {
 		Point a;
@@ -28,8 +29,10 @@ public:
 	}
 
 
-	void subtract(Point d) {
-		x -= d.x; y -= d.y; z -= d.z;
+	Point subtract(Point d) {
+		Point a;
+		a.x = x-d.x; a.y = y-d.y; a.z = z-d.z;
+		return a;
 	}
 
 	Point mult(float n) {
@@ -61,6 +64,7 @@ public:
 	Package() {};
 	~Package() {};
 	int parse(std::string data);
+	std::string xml();
 	void find_boundaries() {
 		double l, w;
 
@@ -90,6 +94,7 @@ public:
 	Dimensions() {}
 	~Dimensions() {}
 	int parse(std::string data);
+	std::string xml();
 };
 
 class PackPallet {
@@ -105,7 +110,9 @@ public:
 	~PackPallet() {};
 	unsigned int n_package() { return package.size(); }
 	int parse(std::string data);
+	std::string xml();
 	// Call once
+	// Might be deprecated! Haven't used this for a while (Remove from viewer.cpp)
 	void find_normals() {
 		for(int i = n_package()-1; i >= 0; i--) {
 			package[i].normal_force = 0.0f;
@@ -137,8 +144,10 @@ public:
 	~PackList() {};
 	unsigned int n_packpallet() { return packpallet.size(); }
 	int parse(std::string data);
+	std::string xml();
 };
 
 PackList read_response(const char* filename, int debug);
+void write_response(PackList list, const char* filename);
 
 #endif /* RESPONSE_H_ */

@@ -22,9 +22,30 @@ int Article::parse(std::string data) {
 	return strlen(data.c_str());
 }
 
+std::string Article::xml() {
+	std::string ret("");
+	ret.append(xml_start_tag("Article"));
+	ret.append(xml_make_tag("ID", itoa(id).c_str()));
+	ret.append(xml_make_tag("Description", description.c_str()));
+	ret.append(xml_make_tag("Type", itoa(type).c_str()));
+	ret.append(xml_make_tag("Length", itoa(length).c_str()));
+	ret.append(xml_make_tag("Width", itoa(width).c_str()));
+	ret.append(xml_make_tag("Height", itoa(height).c_str()));
+	ret.append(xml_make_tag("Weight", itoa(weight).c_str()));
+	ret.append(xml_make_tag("Family", itoa(family).c_str()));
+	ret.append(xml_end_tag("Article"));
+	return ret;
+}
+
 int Barcode::parse(std::string data) {
 	code = data;
 	return strlen(data.c_str());
+}
+
+std::string Barcode::xml() {
+	std::string ret("");
+	ret.append(xml_make_tag("Barcode", ""));
+	return ret;
 }
 
 int OrderLine::parse(std::string data) {
@@ -137,3 +158,4 @@ int OrderXML::parse(const char* filename, int debug_p, int debug_o) {
 	free(orderlist_buf);
 	return ret;
 }
+

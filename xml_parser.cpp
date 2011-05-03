@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+std::string itoa(int n) {
+	std::stringstream ss;
+	ss << n;
+	return ss.str();
+}
+
 // Find file size
 unsigned int xml_parser_get_buffer_length(const char* filename) {
 	std::ifstream is;
@@ -19,6 +25,51 @@ unsigned int xml_parser_get_buffer_length(const char* filename) {
 	is.seekg(0, std::ios::end);
 	unsigned int ret = is.tellg();
 	is.close();
+	return ret;
+}
+
+// Make XML tag value pair and return as a string
+std::string xml_make_tag(const char* tag, const char* value) {
+	std::string ret("");
+	for(int i = 0; i < depth; i++) ret.append("\t");
+	ret.append("<");
+	ret.append(tag);
+	ret.append(">");
+	ret.append(value);
+	ret.append("</");
+	ret.append(tag);
+	ret.append(">");
+	ret.append("\n");
+	return ret;
+}
+
+std::string xml_start_tag(const char* tag) {
+	std::string ret("");
+	for(int i = 0; i < depth; i++) ret.append("\t");
+	ret.append("<");
+	ret.append(tag);
+	ret.append(">");
+	ret.append("\n");
+	depth++;
+	return ret;
+}
+
+std::string xml_value_tag(const char* value) {
+	std::string ret("");
+	for(int i = 0; i < depth; i++) ret.append("\t");
+	ret.append(value);
+	ret.append("\n");
+	return ret;
+}
+
+std::string xml_end_tag(const char* tag) {
+	std::string ret("");
+	depth--;
+	for(int i = 0; i < depth; i++) ret.append("\t");
+	ret.append("</");
+	ret.append(tag);
+	ret.append(">");
+	ret.append("\n");
 	return ret;
 }
 

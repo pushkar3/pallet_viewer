@@ -26,6 +26,7 @@ public:
 	Article() {}
 	~Article() {}
 	int parse(std::string data);
+	std::string xml();
 };
 
 class Barcode {
@@ -35,6 +36,7 @@ public:
 	Barcode() {}
 	~Barcode() {}
 	int parse(std::string data);
+	std::string xml();
 };
 
 class OrderLine {

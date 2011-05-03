@@ -79,6 +79,7 @@ add_executable (pallet_motion_planner ${SRC_FILES_MOTION})
 target_link_libraries (pallet_motion_planner ${CORELIBS} )
 
 INSTALL(TARGETS pallet_viewer RUNTIME DESTINATION bin)
+INSTALL(TARGETS pallet_motion_planner RUNTIME DESTINATION bin)
 INSTALL(FILES doc/pallet_viewer.1 DESTINATION share/man/man1)
 INSTALL(FILES ex1.order.xml DESTINATION share/vmac)
 INSTALL(FILES ex1.packlist.xml DESTINATION share/vmac)

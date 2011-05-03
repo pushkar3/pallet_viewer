@@ -17,6 +17,36 @@ int Point::parse(std::string data) {
 	return strlen(data.c_str());
 }
 
+std::string Point::xml(const char* name) {
+	std::string ret("");
+	ret.append(xml_start_tag(name));
+	ret.append(xml_make_tag("X", itoa(x).c_str()));
+	ret.append(xml_make_tag("Y", itoa(y).c_str()));
+	ret.append(xml_make_tag("Z", itoa(z).c_str()));
+	ret.append(xml_end_tag(name));
+	return ret;
+}
+
+int Dimensions::parse(std::string data) {
+	length = atoi(xml_parse_tag(data, "Length").c_str());
+	width = atoi(xml_parse_tag(data, "Width").c_str());
+	max_load_height = atoi(xml_parse_tag(data, "MaxLoadHeight").c_str());
+	max_load_weight = atoi(xml_parse_tag(data, "MaxLoadWeight").c_str());
+	return strlen(data.c_str());
+}
+
+std::string Dimensions::xml() {
+	std::string ret("");
+	ret.append(xml_start_tag("Dimensions"));
+	ret.append(xml_make_tag("Length", itoa(length).c_str()));
+	ret.append(xml_make_tag("Width", itoa(width).c_str()));
+	ret.append(xml_make_tag("MaxLoadHeight", itoa(max_load_height).c_str()));
+	ret.append(xml_make_tag("MaxLoadWeight", itoa(max_load_weight).c_str()));
+	ret.append(xml_end_tag("Dimensions"));
+	return ret;
+}
+
+
 int Package::parse(std::string data) {
 	pack_sequence = atoi(xml_parse_tag(data, "PackSequence").c_str());
 	incoming_sequence = atoi(xml_parse_tag(data, "IncomingSequence").c_str());
@@ -34,12 +64,20 @@ int Package::parse(std::string data) {
 	return strlen(data.c_str());
 }
 
-int Dimensions::parse(std::string data) {
-	length = atoi(xml_parse_tag(data, "Length").c_str());
-	width = atoi(xml_parse_tag(data, "Width").c_str());
-	max_load_height = atoi(xml_parse_tag(data, "MaxLoadHeight").c_str());
-	max_load_weight = atoi(xml_parse_tag(data, "MaxLoadWeight").c_str());
-	return strlen(data.c_str());
+std::string Package::xml() {
+	std::string ret("");
+	ret.append(xml_start_tag("Package"));
+	ret.append(xml_make_tag("PackSequence", itoa(pack_sequence).c_str()));
+	ret.append(article.xml());
+	ret.append(barcode.xml());
+	ret.append(place_position.xml("PlacePosition"));
+	ret.append(xml_make_tag("Orientation", itoa(orientation).c_str()));
+	ret.append(approach_point_1.xml("ApproachPoint1"));
+	ret.append(approach_point_2.xml("ApproachPoint2"));
+	ret.append(approach_point_3.xml("ApproachPoint3"));
+	ret.append(xml_make_tag("StackHeightBefore", itoa(stack_height_before).c_str()));
+	ret.append(xml_end_tag("Package"));
+	return ret;
 }
 
 int PackPallet::parse(std::string data) {
@@ -61,6 +99,28 @@ int PackPallet::parse(std::string data) {
 	return strlen(data.c_str());
 }
 
+std::string PackPallet::xml() {
+	std::string ret("");
+	ret.append(xml_start_tag("PackPallet"));
+	ret.append(xml_make_tag("PalletNumber", itoa(pallet_number).c_str()));
+	ret.append(xml_make_tag("BruttoWeight", itoa(brutto_weight).c_str()));
+	ret.append(xml_make_tag("NumberofPackages", itoa(n_package()).c_str()));
+	ret.append(xml_make_tag("Description", description.c_str()));
+	ret.append(dimension.xml());
+	ret.append(xml_start_tag("Overhang"));
+	ret.append(xml_make_tag("Length", "0"));
+	ret.append(xml_make_tag("Width", "0"));
+	ret.append(xml_end_tag("Overhang"));
+	ret.append(xml_start_tag("Packages"));
+	for(uint i = 0; i < n_package(); i++) {
+		Package p = package[i];
+		ret.append(p.xml());
+	}
+	ret.append(xml_end_tag("Packages"));
+	ret.append(xml_end_tag("PackPallet"));
+	return ret;
+}
+
 int PackList::parse(std::string data) {
 	order_id = atoi(xml_parse_tag(data, "OrderID").c_str());
 	int ret = 1;
@@ -74,6 +134,20 @@ int PackList::parse(std::string data) {
 		ret = xml_parse_remove_first_tag(&data, "PackPallet");
 	}
 	return strlen(data.c_str());
+}
+
+std::string PackList::xml() {
+	std::string ret("");
+	ret.append(xml_start_tag("PackList"));
+	ret.append(xml_make_tag("OrderID", itoa(order_id).c_str()));
+	ret.append(xml_start_tag("PackPallets"));
+	for(uint i = 0; i < n_packpallet(); i++) {
+		PackPallet p = packpallet[i];
+		ret.append(p.xml());
+	}
+	ret.append(xml_end_tag("PackPallets"));
+	ret.append(xml_end_tag("PackList"));
+	return ret;
 }
 
 PackList read_response(const char* filename, int debug) {
@@ -108,5 +182,15 @@ PackList read_response(const char* filename, int debug) {
 
 	printf("PackList Read.\n");
 	free(packlist_buf);
+	ifs.close();
 	return list;
+}
+
+void write_response(PackList list, const char* filename) {
+	printf("Writing PackList to %s\n", filename);
+	std::ofstream ofs(filename);
+	std::string list_xml = list.xml();
+	ofs.write(list_xml.c_str(), list_xml.size());
+	ofs.close();
+	printf("Writing Done.\n");
 }

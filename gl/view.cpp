@@ -238,7 +238,7 @@ void handle_display(void) {
 	glutSwapBuffers();
 }
 
-void HandleTimer(int value) {
+void HandleTimer(int ) {
 	glutPostRedisplay();
 	glutTimerFunc(30, HandleTimer, 0);
 }
@@ -255,7 +255,7 @@ void handle_reshape(int w, int h) {
 	camera->screenheight = h;
 }
 
-void handle_keyboard(unsigned char key, int x, int y) {
+void handle_keyboard(unsigned char key, int , int ) {
 	switch (key) {
 	case 'Q':
 	case 'q':
@@ -299,7 +299,7 @@ void handle_keyboard(unsigned char key, int x, int y) {
 	}
 }
 
-void handle_specialkeyboard(int key, int x, int y) {
+void handle_specialkeyboard(int key, int , int ) {
 	switch (key) {
 	case GLUT_KEY_LEFT:
 		camera->key_left();
@@ -316,7 +316,7 @@ void handle_specialkeyboard(int key, int x, int y) {
 	}
 }
 
-void handle_mouse(int button, int state, int x, int y) {
+void handle_mouse(int button, int state, int , int ) {
 	if (state == GLUT_DOWN) {
 		if (button == GLUT_LEFT_BUTTON) {
 			currentbutton = GLUT_LEFT_BUTTON;

@@ -9,9 +9,21 @@
 #define XML_PARSER_H_
 
 #include <iostream>
+#include <sstream>
+
+static int depth = 0;
+
+std::string itoa(int n);
 
 // Find file size
 unsigned int xml_parser_get_buffer_length(const char* filename);
+
+// Make XML tag value pair and return as a string
+std::string xml_make_tag(const char* tag, const char* value);
+
+std::string xml_start_tag(const char* tag);
+std::string xml_value_tag(const char* value);
+std::string xml_end_tag(const char* tag);
 
 // Deprecated: Parse XML between start and end tokens
 std::string xml_parse(std::string text, const char* start, const char* end);
