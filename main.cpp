@@ -135,8 +135,8 @@ int main(int argc, char* argv[]) {
 	ct = 0;
 	pair<map<int, col>::iterator, bool> ret;
 
-	oxml.parse("Example.order.xml", 0, 0);
-	list = read_response("Example.packlist.xml", 0);
+	oxml.parse(order_file, 0, 0);
+	list = read_response(packlist_file, 0);
 	cpallet = list.packpallet[0];
 	pallet = oxml.pallet[0];
 	cpallet.find_normals();
