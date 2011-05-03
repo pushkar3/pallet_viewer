@@ -7,9 +7,9 @@ project (pallet_viewer)
 
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "0")
-SET(CPACK_PACKAGE_VERSION_PATCH "11")
+SET(CPACK_PACKAGE_VERSION_PATCH "90")
 SET(CPACK_PACKAGE_NAME "pallet_viewer")
-SET(CPACK_SYSTEM_NAME "amd64")
+SET(CPACK_SYSTEM_NAME "i386")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "glutg3 (>= 3.7), glutg3-dev (>= 3.7)")
 
 set (CMAKE_VERBOSE_MAKEFILE OFF)
@@ -20,7 +20,7 @@ endif(NOT MSVC)
 # add_subdirectory (gl)
 
 option (PACKLIST_UNITTEST "UnitTest to parse a .packlist.xml" OFF)
-option (ORDERLIST_UNITTEST "UnitTest to parse a .order.xml" ON)
+option (ORDERLIST_UNITTEST "UnitTest to parse a .order.xml" OFF)
 
 if (PACKLIST_UNITTEST)
     set_property( SOURCE main.cpp
@@ -46,7 +46,14 @@ set ( SRC_FILES
 packlist
 response
 xml_parser 
-main
+viewer
+)
+
+set ( SRC_FILES_MOTION
+packlist
+response
+xml_parser 
+motion_planner
 )
 
 set ( SRC 
@@ -68,11 +75,15 @@ set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} m)
 include_directories (${HEADERS})
 add_executable (pallet_viewer ${SRC})
 target_link_libraries (pallet_viewer ${CORELIBS} )
+add_executable (pallet_motion_planner ${SRC_FILES_MOTION})
+target_link_libraries (pallet_motion_planner ${CORELIBS} )
 
 INSTALL(TARGETS pallet_viewer RUNTIME DESTINATION bin)
 INSTALL(FILES doc/pallet_viewer.1 DESTINATION share/man/man1)
-INSTALL(FILES Example.order.xml DESTINATION share/vmac)
-INSTALL(FILES Example.packlist.xml DESTINATION share/vmac)
+INSTALL(FILES ex1.order.xml DESTINATION share/vmac)
+INSTALL(FILES ex1.packlist.xml DESTINATION share/vmac)
+INSTALL(FILES ex2.order.xml DESTINATION share/vmac)
+INSTALL(FILES ex2.packlist.xml DESTINATION share/vmac)
 SET(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CPACK_SYSTEM_NAME}")
 SET(CPACK_PACKAGE_CONTACT "pushkar@cc.gatech.edu")
