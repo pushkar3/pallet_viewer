@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int depth = 0;
+
 std::string itoa(int n) {
 	std::stringstream ss;
 	ss << n;

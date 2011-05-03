@@ -22,6 +22,10 @@ public:
 	int parse(std::string data);
 	std::string xml(const char* name);
 
+	void set(int _x, int _y, int _z) {
+		x = _x; y = _y; z = _z;
+	}
+
 	Point add(Point d) {
 		Point a;
 		a.x = x+d.x; a.y = y+d.y; a.z = z+d.z;

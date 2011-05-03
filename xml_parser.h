@@ -11,8 +11,6 @@
 #include <iostream>
 #include <sstream>
 
-static int depth = 0;
-
 std::string itoa(int n);
 
 // Find file size
